@@ -42,4 +42,4 @@ class Band(models.Model):
 class Artist(BaseUser):
     image = models.ImageField(upload_to="Artist")
     song = models.ManyToManyField(Song)
-    Band = models.ForeignKey(Band, null=True, blank=True)
+    Band = models.ForeignKey(Band, on_delete=models.SET_NULL, null=True, blank=True)
