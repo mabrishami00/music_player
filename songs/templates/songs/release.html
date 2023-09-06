@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+	test
+{% endblock %}
+{% block content %}
+<main class="main">
+	<div class="container-fluid">
+		<div class="row row--grid">
+			<!-- breadcrumb -->
+			<div class="col-12">
+				<ul class="breadcrumb">
+					<li class="breadcrumb__item"><a href="{% url 'songs:home' %}">Home</a></li>
+					{% comment %} <li class="breadcrumb__item"><a href="{% url 'songs:releases' %}">Releases</a></li> {% endcomment %}
+					<li class="breadcrumb__item breadcrumb__item--active">Release</li>
+				</ul>
+			</div>
+			<!-- end breadcrumb -->
+
+			<!-- title -->
+			<div class="col-12">
+				<div class="main__title main__title--page">
+					<h1>{{ song.name }}</h1>
+				</div>
+			</div>
+			<!-- end title -->
+
+			<div class="col-12">
+				<div class="release">
+					<div class="release__content">
+						<div class="release__cover">
+							<img src="{{ song.cover_photo.url }}" alt="">
+						</div>
+						<div class="release__stat">
+							<span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,13.18V11A8,8,0,0,0,4,11v2.18A3,3,0,0,0,2,16v2a3,3,0,0,0,3,3H8a1,1,0,0,0,1-1V14a1,1,0,0,0-1-1H6V11a6,6,0,0,1,12,0v2H16a1,1,0,0,0-1,1v6a1,1,0,0,0,1,1h3a3,3,0,0,0,3-3V16A3,3,0,0,0,20,13.18ZM7,15v4H5a1,1,0,0,1-1-1V16a1,1,0,0,1,1-1Zm13,3a1,1,0,0,1-1,1H17V15h2a1,1,0,0,1,1,1Z"/></svg> 19 503</span>
+						</div>
+					</div>
+
+					<div class="release__list">
+						<ul class="main__list main__list--playlist main__list--dashbox">
+							<li class="single-item">
+								<a data-playlist data-title={{ song.name }} data-artist={{ song.artists.all.0.name }} data-img="{{ song.cover_photo.url }}" href="{{ song.audio_file.url }}" class="single-item__cover">
+									<img src={{ song.cover_photo.url }} alt="">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.54,9,8.88,3.46a3.42,3.42,0,0,0-5.13,3V17.58A3.42,3.42,0,0,0,7.17,21a3.43,3.43,0,0,0,1.71-.46L18.54,15a3.42,3.42,0,0,0,0-5.92Zm-1,4.19L7.88,18.81a1.44,1.44,0,0,1-1.42,0,1.42,1.42,0,0,1-.71-1.23V6.42a1.42,1.42,0,0,1,.71-1.23A1.51,1.51,0,0,1,7.17,5a1.54,1.54,0,0,1,.71.19l9.66,5.58a1.42,1.42,0,0,1,0,2.46Z"/></svg>
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16,2a3,3,0,0,0-3,3V19a3,3,0,0,0,6,0V5A3,3,0,0,0,16,2Zm1,17a1,1,0,0,1-2,0V5a1,1,0,0,1,2,0ZM8,2A3,3,0,0,0,5,5V19a3,3,0,0,0,6,0V5A3,3,0,0,0,8,2ZM9,19a1,1,0,0,1-2,0V5A1,1,0,0,1,9,5Z"/></svg>
+								</a>
+								<div class="single-item__title">
+									<h4><a href="#">{{ song.name }}</a></h4>
+									{% for artist in song.artist_set.all %}
+									{% endfor %}
+								</div>
+								<div class="p-2">
+								<a href="#" class="single-item__add">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,11H13V5a1,1,0,0,0-2,0v6H5a1,1,0,0,0,0,2h6v6a1,1,0,0,0,2,0V13h6a1,1,0,0,0,0-2Z"/></svg>
+								</a>
+								</div>
+								{% comment %} {% if not liked %} {% endcomment %}
+								<a href="{% url 'songs:like_unlike' song.id %}" class="like-unlike-song" data-song-id="{{ song.id }}">
+									{% if not liked %}
+									<span class="bi bi-star"></span>
+									{% else %}
+									<span class="bi bi-star-fill"></span>
+									{% endif %}
+									<span class="bi bi-star unlikedAjax" style="display:none"></span>
+									<span class="bi bi-star-fill likedAjax" style="display:none"></span>									
+								</a>
+								{% comment %} {% else %} {% endcomment %}
+								{% comment %} <a href="{% url 'songs:unlike' song.id %}" class="unlike-song" data-song-id="{{ song.id }}">
+									<span class="bi bi-star-fill"></span>
+								</a> {% endcomment %}
+								{% comment %} {% endif %} {% endcomment %}
+								<span  class="p-1" id="likes-count-{{ song.id }}" style="color: white;">{{ number_of_likes }}</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 col-lg-8">
+				<div class="article">
+					<!-- article content -->
+					<div class="article__content">
+						<h4>About Song</h4>
+						<p>{{ song.description }}</p>
+					</div>
+					<!-- end article content -->
+
+					<!-- comments -->
+					<div class="comments">
+						<div class="comments__title">
+							<h4>Comments</h4>
+							<span>{{ song.comment_set.all.count }}</span>
+						</div>
+						<ul class="comments__list">
+							{% for comment in song.comment_set.all %}
+							{% if not comment.is_reply %}
+							<li class="comments__item">
+								<div class="comments__autor">
+									<img class="comments__avatar" src="img/avatar.svg" alt="">
+									<span class="comments__name">{{ comment.user.name }}</span>
+									<span class="comments__time">{{ comment.created_at }}</span>
+								</div>
+								<p class="comments__text">{{ comment.body }}</p>
+								<div class="comments__actions">
+									<div class="comments__rate">
+										<button type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z"/><path d="M13 16V8C13 7.73478 12.8946 7.48043 12.7071 7.29289C12.5196 7.10536 12.2652 7 12 7C11.7348 7 11.4804 7.10536 11.2929 7.29289C11.1054 7.48043 11 7.73478 11 8V16C11 16.2652 11.1054 16.5196 11.2929 16.7071C11.4804 16.8946 11.7348 17 12 17C12.2652 17 12.5196 16.8946 12.7071 16.7071C12.8946 16.5196 13 16.2652 13 16Z"/></svg> 12</button>
+
+										<button type="button">7 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z"/></svg></button>
+									</div>
+
+									<button type="button" id="showFormButton"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.707,11.293l-8-8A.99991.99991,0,0,0,12,4V7.54492A11.01525,11.01525,0,0,0,2,18.5V20a1,1,0,0,0,1.78418.62061,11.45625,11.45625,0,0,1,7.88672-4.04932c.0498-.00635.1748-.01611.3291-.02588V20a.99991.99991,0,0,0,1.707.707l8-8A.99962.99962,0,0,0,21.707,11.293ZM14,17.58594V15.5a.99974.99974,0,0,0-1-1c-.25488,0-1.2959.04932-1.56152.085A14.00507,14.00507,0,0,0,4.05176,17.5332,9.01266,9.01266,0,0,1,13,9.5a.99974.99974,0,0,0,1-1V6.41406L19.58594,12Z"/></svg><span>Reply</span></button>
+									<form action="" class="comments__form" method="post" id="replyForm" style="display: none;">
+										{% csrf_token %}
+										<div class="sign__group">
+										{{ form.body}}
+										<input type="hidden" name="comment_id" value={{ comment.pk }}>
+										</div>
+										<button type="submit" name="submit_reply" class="sign__btn" style="width:50px">Send</button>
+									</form>
+								</div>
+							</li>
+							{% for comment_reply in comment.comments_reply.all %}
+							<li class="comments__item comments__item--answer">
+								<div class="comments__autor">
+									<img class="comments__avatar" src="img/avatar.svg" alt="">
+									<span class="comments__name">{{ comment_reply.user.name }}</span>
+									<span class="comments__time">{{ comment_reply.created_at }}</span>
+								</div>
+								<p class="comments__text">{{ comment_reply.body }}</p>
+								<div class="comments__actions">
+									<div class="comments__rate">
+										<button type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z"/><path d="M13 16V8C13 7.73478 12.8946 7.48043 12.7071 7.29289C12.5196 7.10536 12.2652 7 12 7C11.7348 7 11.4804 7.10536 11.2929 7.29289C11.1054 7.48043 11 7.73478 11 8V16C11 16.2652 11.1054 16.5196 11.2929 16.7071C11.4804 16.8946 11.7348 17 12 17C12.2652 17 12.5196 16.8946 12.7071 16.7071C12.8946 16.5196 13 16.2652 13 16Z"/></svg> 10</button>
+
+										<button type="button">0 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V5C22 4.20435 21.6839 3.44129 21.1213 2.87868C20.5587 2.31607 19.7956 2 19 2ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H19C19.2652 4 19.5196 4.10536 19.7071 4.29289C19.8946 4.48043 20 4.73478 20 5V19ZM16 11H8C7.73478 11 7.48043 11.1054 7.29289 11.2929C7.10536 11.4804 7 11.7348 7 12C7 12.2652 7.10536 12.5196 7.29289 12.7071C7.48043 12.8946 7.73478 13 8 13H16C16.2652 13 16.5196 12.8946 16.7071 12.7071C16.8946 12.5196 17 12.2652 17 12C17 11.7348 16.8946 11.4804 16.7071 11.2929C16.5196 11.1054 16.2652 11 16 11Z"/></svg></button>
+									</div>
+
+								</div>
+							</li>
+							{% endfor %}
+							{%endif%}
+							{% endfor %}
+						</ul>
+
+						<form action="" method="post" class="comments__form">
+							{% csrf_token %}
+							<div class="sign__group">
+								{{ form.body }}
+							</div>
+							<button type="submit" name="submit_new" class="sign__btn">Send</button>
+						</form>
+					</div>
+					<!-- end comments -->
+				</div>
+			</div>
+
+			<div class="col-12 col-lg-4">
+				<!-- releases -->
+				<div class="row row--sidebar">
+					<!-- title -->
+					<div class="col-12">
+						<div class="main__title main__title--sidebar">
+							<h3>Other releases</h3>
+						</div>
+					</div>
+					<!-- end title -->
+
+					<div class="col-6 col-sm-4 col-lg-6">
+						<div class="album album--sidebar">
+							<div class="album__cover">
+								<img src="img/covers/cover8.jpg" alt="">
+								<a href="{% url 'songs:release' song.pk %}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.54,9,8.88,3.46a3.42,3.42,0,0,0-5.13,3V17.58A3.42,3.42,0,0,0,7.17,21a3.43,3.43,0,0,0,1.71-.46L18.54,15a3.42,3.42,0,0,0,0-5.92Zm-1,4.19L7.88,18.81a1.44,1.44,0,0,1-1.42,0,1.42,1.42,0,0,1-.71-1.23V6.42a1.42,1.42,0,0,1,.71-1.23A1.51,1.51,0,0,1,7.17,5a1.54,1.54,0,0,1,.71.19l9.66,5.58a1.42,1.42,0,0,1,0,2.46Z"/></svg></a>
+								<span class="album__stat">
+									<span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.71,16.29a1,1,0,0,0-.33-.21,1,1,0,0,0-.76,0,1,1,0,0,0-.33.21,1,1,0,0,0-.21.33,1,1,0,0,0,.21,1.09,1.15,1.15,0,0,0,.33.21.94.94,0,0,0,.76,0,1.15,1.15,0,0,0,.33-.21,1,1,0,0,0,.21-1.09A1,1,0,0,0,3.71,16.29ZM7,8H21a1,1,0,0,0,0-2H7A1,1,0,0,0,7,8ZM3.71,11.29a1,1,0,0,0-1.09-.21,1.15,1.15,0,0,0-.33.21,1,1,0,0,0-.21.33.94.94,0,0,0,0,.76,1.15,1.15,0,0,0,.21.33,1.15,1.15,0,0,0,.33.21.94.94,0,0,0,.76,0,1.15,1.15,0,0,0,.33-.21,1.15,1.15,0,0,0,.21-.33.94.94,0,0,0,0-.76A1,1,0,0,0,3.71,11.29ZM21,11H7a1,1,0,0,0,0,2H21a1,1,0,0,0,0-2ZM3.71,6.29a1,1,0,0,0-.33-.21,1,1,0,0,0-1.09.21,1.15,1.15,0,0,0-.21.33.94.94,0,0,0,0,.76,1.15,1.15,0,0,0,.21.33,1.15,1.15,0,0,0,.33.21,1,1,0,0,0,1.09-.21,1.15,1.15,0,0,0,.21-.33.94.94,0,0,0,0-.76A1.15,1.15,0,0,0,3.71,6.29ZM21,16H7a1,1,0,0,0,0,2H21a1,1,0,0,0,0-2Z"/></svg> 22</span>
+									<span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,13.18V11A8,8,0,0,0,4,11v2.18A3,3,0,0,0,2,16v2a3,3,0,0,0,3,3H8a1,1,0,0,0,1-1V14a1,1,0,0,0-1-1H6V11a6,6,0,0,1,12,0v2H16a1,1,0,0,0-1,1v6a1,1,0,0,0,1,1h3a3,3,0,0,0,3-3V16A3,3,0,0,0,20,13.18ZM7,15v4H5a1,1,0,0,1-1-1V16a1,1,0,0,1,1-1Zm13,3a1,1,0,0,1-1,1H17V15h2a1,1,0,0,1,1,1Z"/></svg> 19 503</span>
+								</span>
+							</div>
+							<div class="album__title">
+								<h3><a href="{% url 'songs:release' song.pk %}">Space Melody</a></h3>
+								<span>
+									{% for artist in song.artists.all %}
+									<a href="{% url 'songs:artist' artist.pk %}">{{ artist.name }}</a> {% if not forloop.last %}&{% endif %}
+									{% endfor %}
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end releases -->
+			</div>	
+		</div>
+	</div>
+</main>
+
+<input type="hidden" name="csrfmiddlewaretoken" value="{% csrf_token %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+$(document).ready(function() {
+	$("#showFormButton").click(function() {
+		$("#replyForm").toggle();
+	});
+});
+
+$(document).ready(function () {
+	$('a.like-unlike-song').click(function (e) {
+		e.preventDefault();
+		var url = $(this).attr('href');
+		var songId = $(this).data('song-id');
+		var csrfToken = $('[name=csrfmiddlewaretoken]').val();
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: {
+				song_id: songId, 
+				csrfmiddlewaretoken: csrfToken 
+			},
+			dataType: 'json',
+			success: function (data) {
+				
+				if (data.liked) {
+                    $('a.like-unlike-song[data-song-id="' + songId + '"] .bi-star').hide();
+                    $('a.like-unlike-song[data-song-id="' + songId + '"] .likedAjax').show();
+                } else {
+                    $('a.like-unlike-song[data-song-id="' + songId + '"] .bi-star-fill').hide();
+                    $('a.like-unlike-song[data-song-id="' + songId + '"] .unlikedAjax').show();
+                }
+				
+				$('#likes-count-' + songId).text(data.number_of_likes);
+			},
+			error: function () {
+				alert('An error occurred.');
+
+			}
+		});
+	});
+});
+
+{% comment %} $(document).ready(function () {
+	$('a.unlike-song').click(function (e) {
+		e.preventDefault();
+		var url = $(this).attr('href');
+		var songId = $(this).data('song-id');
+		var csrfToken = $('[name=csrfmiddlewaretoken]').val();
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: {
+				song_id: songId, 
+				csrfmiddlewaretoken: csrfToken 
+			},
+			dataType: 'json',
+			success: function (data) {
+				
+				alert(data.message);
+				$('#likes-count-' + songId).text(data.number_of_likes);
+			},
+			error: function () {
+				alert('An error occurred.');
+
+			}
+		});
+	});
+}); {% endcomment %}
+</script>
+
+
+
+{% endblock %}

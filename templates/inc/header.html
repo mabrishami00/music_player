@@ -9,7 +9,7 @@
     </div>
 
     <nav class="header__nav">
-      <a href="profile.html">Profile</a>
+      <a href="{% url 'accounts:profile' %}">Profile</a>
       <a href="about.html">About</a>
       <a href="contacts.html">Contacts</a>
     </nav>
@@ -154,9 +154,9 @@
           </div>
         </div>
       </div>
-
+      {% if not request.user.is_authenticated %}
       <div class="header__action header__action--signin">
-        <a class="header__action-btn" href="signin.html">
+        <a class="header__action-btn" href="{% url 'accounts:signin' %}">
           <span>Sign in</span>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path
@@ -165,6 +165,9 @@
           </svg>
         </a>
       </div>
+      {% else %}
+      <span class="m-3" style="color: white">{{ request.user.username }}</span>
+      {% endif %}
     </div>
 
     <button class="header__btn" type="button">
