@@ -1,15 +1,18 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from songs.models import Song
 from .managers import MyUserManager
-# Create your models here.
 
-class BaseUser(AbstractBaseUser):
+
+class BaseUser(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=50)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
+    bio = models.TextField()
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-
+    joined = models.DateTimeField(auto_now_add=True)
+    
     objects = MyUserManager()
 
     USERNAME_FIELD = "email"
@@ -28,18 +31,19 @@ class BaseUser(AbstractBaseUser):
     def is_staff(self):
         return self.is_admin
 
-    # class Meta:
-    #     abstract = True
 
 class User(BaseUser):
+    MEMBERSHIP_CHOICES = (
+        ('V', 'VIP'),
+        ('F', 'FREE'),
+    )
     image = models.ImageField(upload_to="User", null=True, blank=True)
-    is_vip = models.BooleanField(default=False)
+    status = models.CharField(max_length=1, choices=MEMBERSHIP_CHOICES, default="F")
 
 class Band(models.Model):
     name = models.CharField(max_length=50)
 
 
 class Artist(BaseUser):
-    image = models.ImageField(upload_to="Artist")
-    song = models.ManyToManyField(Song)
-    Band = models.ForeignKey(Band, on_delete=models.SET_NULL, null=True, blank=True)
+    image = models.ImageField(upload_to="Artist",null=True, blank=True)
+    band = models.ForeignKey(Band, on_delete=models.SET_NULL, null=True, blank=True)

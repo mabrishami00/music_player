@@ -8,8 +8,8 @@ class MyUserManager(BaseUserManager):
             raise ValueError("Users must have an email address")
 
         user = self.model(
+            name=name,
             email=self.normalize_email(email),
-            date_of_birth=date_of_birth,
         )
 
         user.set_password(password)
@@ -17,11 +17,10 @@ class MyUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, name, email, password=None):
-
         user = self.create_user(
+            name,
             email,
             password=password,
-            date_of_birth=date_of_birth,
         )
         user.is_admin = True
         user.is_superuser = True
